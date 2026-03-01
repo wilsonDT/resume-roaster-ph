@@ -47,8 +47,6 @@ export default function Home() {
       }
       setText(extracted);
       setIsExtracting(false);
-      // Pass extracted text directly — don't rely on setText having flushed into state
-      await handleRoast(extracted);
     } catch {
       setIsExtracting(false);
       setErrorMsg("Error reading the PDF. Just paste it.");
@@ -62,8 +60,8 @@ export default function Home() {
     await processPDFFile(file);
   }
 
-  async function handleRoast(textOverride?: string) {
-    const trimmed = (textOverride ?? text).trim();
+  async function handleRoast() {
+    const trimmed = text.trim();
     if (trimmed.length < 50) {
       setErrorMsg("That's way too short! Paste your whole resume, not just your name.");
       return;
@@ -244,12 +242,22 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="footer">
-        <p>
-          No resume left unroasted. 🔥
-        </p>
-        <p className="footer-disclaimer">
-          For entertainment only. But seriously, update that resume.
-        </p>
+        <p className="footer-tagline">No resume left unroasted. 🔥</p>
+        <p className="footer-disclaimer">For entertainment only. But seriously, update that resume.</p>
+        <div className="footer-meta">
+          <span>
+            Made with 🔥 by{" "}
+            <a href="https://www.linkedin.com/in/wilsondetorres/" target="_blank" rel="noopener noreferrer" className="footer-link">
+              Wilson De Torres
+            </a>
+          </span>
+          <span className="footer-dot">·</span>
+          <a href="https://github.com/wilsonDT/resume-roaster-ph" target="_blank" rel="noopener noreferrer" className="footer-link">
+            Open source
+          </a>
+          <span className="footer-dot">·</span>
+          <span>🤖 AI-powered, zero data stored</span>
+        </div>
       </footer>
     </main>
   );

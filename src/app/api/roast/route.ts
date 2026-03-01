@@ -25,9 +25,9 @@ JSON format:
 {
   "score": <number 1-100, be honest and harsh — average resume gets 40-60>,
   "burns": [
-    "<roast bullet with Gen Z Tagalog flair 1>",
-    "<roast bullet with Gen Z Tagalog flair 2>",
-    "<roast bullet with Gen Z Tagalog flair 3>",
+    "<roast bullet 1",
+    "<roast bullet 2",
+    "<roast bullet 3",
     "<optional bullet 4>",
     "<optional bullet 5>"
   ],
@@ -36,7 +36,7 @@ JSON format:
 }
 
 Tone guide:
-- Write in plain Tagalog Conyo.
+- Write in plain English Gen Z slang with a hint of Tagalog conyo. 
 - Be direct, witty, and sharp — no sugarcoating
 - Use emojis liberally — 💀 for devastating burns, 💩 for terrible choices, 🔥 for spicy takes, 😭 for painfully relatable fails
 - Call out ATS issues specifically when relevant (e.g. "An ATS would 💀 on this format")
