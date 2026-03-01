@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const message = await client.chat.completions.create({
-      model: "stepfun/step-3.5-flash",
+      model: "arcee-ai/trinity-large-preview:free",
       max_tokens: 4096,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
