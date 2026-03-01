@@ -89,6 +89,12 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  transition: border-color 0.15s, background-color 0.15s;
+  user-select: none;
+}
+
+.input-card .resume-textarea {
+  user-select: text;
 }
 
 .input-header {
@@ -144,6 +150,20 @@ body {
   gap: 12px;
 }
 
+/* Drop zone active state */
+.drop-zone--active {
+  border-color: var(--fire);
+  border-style: solid;
+  background-color: rgba(255, 69, 0, 0.04);
+}
+
+.drop-hint {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--fire-2);
+  animation: fadeIn 0.2s ease;
+}
+
 .pdf-upload-label {
   display: inline-flex;
   align-items: center;
@@ -161,6 +181,12 @@ body {
 .pdf-upload-label:hover {
   border-color: var(--fire);
   color: var(--fire-2);
+}
+
+.pdf-upload-label.extracting {
+  border-color: var(--gold);
+  color: var(--gold);
+  cursor: wait;
 }
 
 .pdf-input-hidden {

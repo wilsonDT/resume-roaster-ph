@@ -7,38 +7,63 @@ import LoadingScreen from "@/components/LoadingScreen";
 
 type Status = "idle" | "loading" | "done" | "error";
 
+const MAX_PDF_BYTES = 5 * 1024 * 1024; // 5 MB
+
 export default function Home() {
   const [text, setText] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [completing, setCompleting] = useState(false);
   const [roast, setRoast] = useState<RoastResult | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
+  const [isDragging, setIsDragging] = useState(false);
+  const [isExtracting, setIsExtracting] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
+  const dragEnterCount = useRef<number>(0);
+  const completionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  async function handlePDFUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  async function processPDFFile(file: File) {
     if (file.type !== "application/pdf") {
-      setErrorMsg("PDFs only. No other formats.");
+      setErrorMsg("PDFs only. Drop a .pdf file.");
       return;
     }
+    if (file.size > MAX_PDF_BYTES) {
+      setErrorMsg("That PDF is too large. Keep it under 5MB.");
+      return;
+    }
+
+    setIsExtracting(true);
+    setErrorMsg("");
+
     try {
       const { extractTextFromPDF } = await import("@/lib/pdf");
       const extracted = await extractTextFromPDF(file);
-      if (!extracted) {
+      if (!extracted.trim()) {
         setErrorMsg("Couldn't read that PDF. Try pasting manually.");
+        setIsExtracting(false);
         return;
       }
       setText(extracted);
-      setErrorMsg("");
+      setIsExtracting(false);
+      // Pass extracted text directly — don't rely on setText having flushed into state
+      await handleRoast(extracted);
     } catch {
+      setIsExtracting(false);
       setErrorMsg("Error reading the PDF. Just paste it.");
     }
   }
 
-  async function handleRoast() {
-    const trimmed = text.trim();
+  async function handlePDFUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = ""; // reset so same file can be re-selected
+    await processPDFFile(file);
+  }
+
+  async function handleRoast(textOverride?: string) {
+    const trimmed = (textOverride ?? text).trim();
     if (trimmed.length < 50) {
       setErrorMsg("That's way too short! Paste your whole resume, not just your name.");
       return;
@@ -63,11 +88,10 @@ export default function Home() {
       setRoast(data);
       setCompleting(true);
 
-      // Let the progress bar complete before showing results
-      setTimeout(() => {
+      completionTimerRef.current = setTimeout(() => {
         setStatus("done");
         setCompleting(false);
-        setTimeout(() => {
+        scrollTimerRef.current = setTimeout(() => {
           resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
         }, 100);
       }, 600);
@@ -78,12 +102,45 @@ export default function Home() {
   }
 
   function handleReset() {
+    if (completionTimerRef.current) clearTimeout(completionTimerRef.current);
+    if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
     setText("");
     setRoast(null);
     setStatus("idle");
     setCompleting(false);
     setErrorMsg("");
     if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "copy";
+  }
+
+  function handleDragEnter(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    dragEnterCount.current += 1;
+    if (dragEnterCount.current === 1) setIsDragging(true);
+  }
+
+  function handleDragLeave() {
+    dragEnterCount.current = Math.max(0, dragEnterCount.current - 1);
+    if (dragEnterCount.current === 0) setIsDragging(false);
+  }
+
+  async function handleDrop(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    dragEnterCount.current = 0;
+    setIsDragging(false);
+
+    if (status === "loading" || isExtracting) return;
+
+    const { dataTransfer } = e;
+    if (!dataTransfer) return;
+    const file = dataTransfer.files[0];
+    if (!file) return;
+
+    await processPDFFile(file);
   }
 
   const isLoading = status === "loading" || status === "error";
@@ -113,7 +170,13 @@ export default function Home() {
 
       {/* Input Section */}
       <section className="input-section">
-        <div className="input-card">
+        <div
+          className={`input-card${isDragging ? " drop-zone--active" : ""}`}
+          onDragOver={handleDragOver}
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
           <div className="input-header">
             <span className="input-step">01</span>
             <h2 className="input-title">Paste or upload your resume</h2>
@@ -128,18 +191,22 @@ export default function Home() {
           />
 
           <div className="input-actions">
-            <label className="pdf-upload-label">
+            <label className={`pdf-upload-label${isExtracting ? " extracting" : ""}`}>
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".pdf"
+                accept=".pdf,application/pdf"
                 onChange={handlePDFUpload}
                 className="pdf-input-hidden"
               />
-              📄 Upload PDF
+              {isExtracting ? "⏳ Reading PDF…" : "📄 Upload PDF"}
             </label>
 
-            {text && (
+            {isDragging && !isExtracting && (
+              <span className="drop-hint">Drop it here!</span>
+            )}
+
+            {text && !isDragging && (
               <span className="char-count">
                 {text.length.toLocaleString()} chars
               </span>
@@ -154,8 +221,8 @@ export default function Home() {
 
           <button
             className="roast-btn"
-            onClick={handleRoast}
-            disabled={isLoading}
+            onClick={() => handleRoast()}
+            disabled={isLoading || isExtracting}
           >
             🔥 Roast me!
           </button>

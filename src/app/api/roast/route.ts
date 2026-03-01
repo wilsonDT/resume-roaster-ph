@@ -25,9 +25,9 @@ JSON format:
 {
   "score": <number 1-100, be honest and harsh — average resume gets 40-60>,
   "burns": [
-    "<roast bullet with Gen Z flair + emoji 1>",
-    "<roast bullet with Gen Z flair + emoji 2>",
-    "<roast bullet with Gen Z flair + emoji 3>",
+    "<roast bullet with Gen Z Tagalog flair 1>",
+    "<roast bullet with Gen Z Tagalog flair 2>",
+    "<roast bullet with Gen Z Tagalog flair 3>",
     "<optional bullet 4>",
     "<optional bullet 5>"
   ],
@@ -36,7 +36,7 @@ JSON format:
 }
 
 Tone guide:
-- Write in plain English
+- Write in plain Tagalog Conyo.
 - Be direct, witty, and sharp — no sugarcoating
 - Use emojis liberally — 💀 for devastating burns, 💩 for terrible choices, 🔥 for spicy takes, 😭 for painfully relatable fails
 - Call out ATS issues specifically when relevant (e.g. "An ATS would 💀 on this format")
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const message = await client.chat.completions.create({
-      model: "arcee-ai/trinity-large-preview:free",
+      model: "stepfun/step-3.5-flash:free",
       max_tokens: 32768,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
@@ -81,7 +81,6 @@ export async function POST(req: NextRequest) {
     });
 
     const rawText = message.choices[0]?.message?.content ?? "";
-    console.log("Raw model response:", rawText);
 
     let roast: RoastResult;
     try {
