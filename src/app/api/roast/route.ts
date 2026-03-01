@@ -1,8 +1,11 @@
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import { NextRequest, NextResponse } from "next/server";
 import type { RoastResult } from "@/types/roast";
 
-const client = new Anthropic();
+const client = new OpenAI({
+  baseURL: "https://openrouter.ai/api/v1",
+  apiKey: process.env.OPENROUTER_API_KEY,
+});
 
 const SYSTEM_PROMPT = `Ikaw ay isang brutal pero nakakatawa na resume reviewer na nagsasalita ng Taglish — isang mix ng Tagalog at English na pang-araw-araw na Pilipino.
 
@@ -65,11 +68,11 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const message = await client.messages.create({
-      model: "claude-sonnet-4-6",
+    const message = await client.chat.completions.create({
+      model: "openrouter/free",
       max_tokens: 1024,
-      system: SYSTEM_PROMPT,
       messages: [
+        { role: "system", content: SYSTEM_PROMPT },
         {
           role: "user",
           content: `I-roast mo ang resume ko:\n\n${resumeText}`,
@@ -77,8 +80,7 @@ export async function POST(req: NextRequest) {
       ],
     });
 
-    const rawText =
-      message.content[0].type === "text" ? message.content[0].text : "";
+    const rawText = message.choices[0]?.message?.content ?? "";
 
     let roast: RoastResult;
     try {
