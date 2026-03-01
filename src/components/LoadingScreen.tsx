@@ -3,16 +3,16 @@
 import { useEffect, useState } from "react";
 
 const LOADING_MESSAGES = [
-  "Binabasa ng AI ang iyong mga excuses...",
-  "Hinihintay pa si HR...",
-  "Checking kung nag-Google ka ng 'resume tips'...",
-  "Tinitingnan kung totoo lahat ng sinabi mo...",
-  "Kinukwento ng AI sa mga kaibigan niya ang resume mo...",
-  "Nagsu-sulat ng mahabang listahan ng reklamo...",
-  "Kinakausap ng AI ang mga dating boss mo...",
-  "Pinapalabas ng lahat ng red flags...",
-  "Nagbibilang ng typos at grammatical errors...",
-  "Nakikiusap sa Diyos para sa magandang score...",
+  "The AI is reading your excuses...",
+  "Checking if you Googled 'resume tips' last night...",
+  "Verifying if any of this is actually true...",
+  "The AI is telling its friends about your resume, grabe...",
+  "Compiling a very long list of complaints...",
+  "Reaching out to your references, charot...",
+  "Counting typos and grammatical crimes...",
+  "Roasting every buzzword you wrote, lods...",
+  "Still waiting for HR to reply, sus...",
+  "Praying for a decent score, sana all...",
 ];
 
 interface LoadingScreenProps {
@@ -51,15 +51,15 @@ export default function LoadingScreen({
       <div className="loading-inner">
         {hasError ? (
           <div className="loading-error">
-            <p className="loading-error-title">Ay nako. May nangyari.</p>
+            <p className="loading-error-title">Oof. Something went wrong, grabe.</p>
             <p className="loading-error-msg">{errorMsg}</p>
             <button className="loading-retry-btn" onClick={onRetry}>
-              Subukan ulit
+              Try again
             </button>
           </div>
         ) : (
           <>
-            <p className="loading-label">Inii-roast ka na...</p>
+            <p className="loading-label">Getting roasted...</p>
             <div className="loading-progress-track">
               <div
                 className={`loading-progress-fill${completing ? " completing" : ""}`}

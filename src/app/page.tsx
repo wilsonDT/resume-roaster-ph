@@ -20,27 +20,27 @@ export default function Home() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.type !== "application/pdf") {
-      setErrorMsg("PDF lang ang accepted. Wag kang maarte!");
+      setErrorMsg("PDFs only, lods. No other formats.");
       return;
     }
     try {
       const { extractTextFromPDF } = await import("@/lib/pdf");
       const extracted = await extractTextFromPDF(file);
       if (!extracted) {
-        setErrorMsg("Hindi ma-read ang PDF na 'yan. Try mo i-paste manually.");
+        setErrorMsg("Couldn't read that PDF, charot. Try pasting manually.");
         return;
       }
       setText(extracted);
       setErrorMsg("");
     } catch {
-      setErrorMsg("May error sa pag-read ng PDF. I-paste mo na lang.");
+      setErrorMsg("Error reading the PDF. Just paste it, lods.");
     }
   }
 
   async function handleRoast() {
     const trimmed = text.trim();
     if (trimmed.length < 50) {
-      setErrorMsg("Ang ikli naman! Paste mo yung buong resume mo, hindi lang pangalan mo.");
+      setErrorMsg("That's way too short! Paste your whole resume, not just your name, sus.");
       return;
     }
     setStatus("loading");
@@ -72,7 +72,7 @@ export default function Home() {
         }, 100);
       }, 600);
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : "May error. Subukan ulit!");
+      setErrorMsg(err instanceof Error ? err.message : "Something went wrong. Try again!");
       setStatus("error");
     }
   }
@@ -105,9 +105,9 @@ export default function Home() {
           Resume Roaster <span className="hero-ph">PH</span>
         </h1>
         <p className="hero-subtitle">
-          I-paste ang resume mo. Tatanggapin namin ng buong puso.
+          Paste your resume. We'll accept it with open arms.
           <br />
-          <strong>At i-roast namin nang walang awa.</strong>
+          <strong>And roast it with zero mercy.</strong>
         </p>
       </header>
 
@@ -116,12 +116,12 @@ export default function Home() {
         <div className="input-card">
           <div className="input-header">
             <span className="input-step">01</span>
-            <h2 className="input-title">I-paste o i-upload ang resume mo</h2>
+            <h2 className="input-title">Paste or upload your resume</h2>
           </div>
 
           <textarea
             className="resume-textarea"
-            placeholder="I-paste mo dito ang resume mo... (plain text, o mag-upload ng PDF sa baba)"
+            placeholder="Paste your resume here... (plain text, or upload a PDF below)"
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={12}
@@ -136,7 +136,7 @@ export default function Home() {
                 onChange={handlePDFUpload}
                 className="pdf-input-hidden"
               />
-              📄 Mag-upload ng PDF
+              📄 Upload PDF
             </label>
 
             {text && (
@@ -157,7 +157,7 @@ export default function Home() {
             onClick={handleRoast}
             disabled={isLoading}
           >
-            🔥 I-roast mo ako!
+            🔥 Roast me!
           </button>
         </div>
       </section>
@@ -166,9 +166,9 @@ export default function Home() {
       {status === "done" && roast && (
         <section className="result-section" ref={resultRef}>
           <div className="result-header">
-            <h2 className="result-title">Narito na ang katotohanan 👇</h2>
+            <h2 className="result-title">Here's the truth 👇</h2>
             <button className="reset-btn" onClick={handleReset}>
-              Subukan ulit
+              Try again
             </button>
           </div>
           <RoastCard roast={roast} />
@@ -178,10 +178,10 @@ export default function Home() {
       {/* Footer */}
       <footer className="footer">
         <p>
-          Walang resume ang naiwan nang buo. 🔥
+          No resume left unroasted. 🔥
         </p>
         <p className="footer-disclaimer">
-          Para sa entertainment lang. Pero seryoso ka na mag-update ng resume mo.
+          For entertainment only. But slay that resume update tho.
         </p>
       </footer>
     </main>
