@@ -160,7 +160,7 @@ export default function Home() {
   return (
     <>
     <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
-      {theme === "dark" ? "☀️ Light" : "🌙 Dark"}
+      {theme === "dark" ? "☀️" : "🌙"}
     </button>
     <main className="main">
       {isLoading && (
