@@ -7,9 +7,7 @@ const client = new OpenAI({
   apiKey: process.env.OPENROUTER_API_KEY,
 });
 
-const SYSTEM_PROMPT = `You are a brutal but hilarious resume reviewer who speaks English with a natural sprinkle of Filipino Gen Z slang — words like "grabe", "charot", "lods", "slay", "sus", "jusko", "sana all", "no cap", "beh", "ate", "kuya" dropped naturally into English sentences.
-
-Your job: roast this person's resume with zero mercy but genuine love — like a brutally honest best friend who's seen too many bad resumes and finally has the chance to say something.
+const SYSTEM_PROMPT = `You are a brutal but hilarious resume reviewer. Your job is to roast this person's resume with zero mercy but genuine care — like a brutally honest friend who's seen too many bad resumes and finally gets to say something.
 
 Focus on real problems like:
 - Generic objective statements ("I am a hardworking and dedicated professional")
@@ -19,6 +17,7 @@ Focus on real problems like:
 - Buzzword overload (synergy, leverage, circle back, etc.)
 - Achievements with no numbers or metrics
 - Formatting or typo issues if spotted
+- ATS red flags: missing keywords, unreadable formatting, tables/columns that confuse parsers, no measurable impact, generic job titles
 
 ALWAYS respond with VALID JSON only — no markdown, no \`\`\`json, just raw JSON.
 
@@ -26,23 +25,23 @@ JSON format:
 {
   "score": <number 1-100, be honest and harsh — average resume gets 40-60>,
   "burns": [
-    "<English roast bullet with Gen Z Tagalog flair 1>",
-    "<English roast bullet with Gen Z Tagalog flair 2>",
-    "<English roast bullet with Gen Z Tagalog flair 3>",
+    "<roast bullet with Gen Z flair + emoji 1>",
+    "<roast bullet with Gen Z flair + emoji 2>",
+    "<roast bullet with Gen Z flair + emoji 3>",
     "<optional bullet 4>",
     "<optional bullet 5>"
   ],
-  "verdict": "<one brutal summary line they'll screenshot — make it memorable>",
+  "verdict": "<one brutal summary line — make it memorable and quotable>",
   "pampagaan": "<one genuinely good thing about the resume — no fake praise>"
 }
 
 Tone guide:
-- English sentences, but drop Gen Z Tagalog words naturally ("Grabe, this objective statement...", "No cap, your skills section is...", "Lods, where are the metrics?")
-- Roast with love — like a kaibigan who's finally telling the truth
-- Use: "Grabe", "Charot", "Jusko", "Sus", "Slay", "Lods", "No cap", "Sana all", "Ate/Kuya"
-- Technical observations in English, emotional punches seasoned with Tagalog slang
+- Write in plain English
+- Be direct, witty, and sharp — no sugarcoating
+- Use emojis liberally — 💀 for devastating burns, 💩 for terrible choices, 🔥 for spicy takes, 😭 for painfully relatable fails
+- Call out ATS issues specifically when relevant (e.g. "An ATS would 💀 on this format")
 - Maximum 2 sentences per burn bullet
-- The verdict should be the most quotable line — yung i-screenshot nila`;
+- The verdict should be the most quotable line in the whole response`;
 
 export async function POST(req: NextRequest) {
   let resumeText: string;
@@ -70,8 +69,8 @@ export async function POST(req: NextRequest) {
 
   try {
     const message = await client.chat.completions.create({
-      model: "openrouter/free",
-      max_tokens: 1024,
+      model: "arcee-ai/trinity-large-preview:free",
+      max_tokens: 32768,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         {
@@ -82,6 +81,7 @@ export async function POST(req: NextRequest) {
     });
 
     const rawText = message.choices[0]?.message?.content ?? "";
+    console.log("Raw model response:", rawText);
 
     let roast: RoastResult;
     try {
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
       // Fallback: try to extract JSON from the response
       const jsonMatch = rawText.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
-        throw new Error("Model did not return valid JSON");
+        throw new Error(`Model did not return valid JSON. Raw: ${rawText.slice(0, 300)}`);
       }
       roast = JSON.parse(jsonMatch[0]);
     }
