@@ -1,6 +1,6 @@
-# Resume Roaster PH 🔥
+# Resume Roaster PH 
 
-A brutally honest AI resume reviewer with Filipino Gen Z flair. Paste or drop your resume, get roasted with zero mercy.
+An AI resume reviewer with Filipino Gen Z flair. Paste or drop your resume, get roasted bruh.
 
 **[Live demo →](https://resume-roaster-ph.vercel.app)**
 
