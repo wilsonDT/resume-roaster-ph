@@ -498,9 +498,11 @@ body {
   color: var(--text);
 }
 
-.burn-icon {
+.burn-dash {
   flex-shrink: 0;
   margin-top: 1px;
+  color: var(--fire);
+  font-weight: 700;
 }
 
 /* Pampagaan */
@@ -550,6 +552,112 @@ body {
 .share-btn:hover {
   border-color: #444;
   background: var(--surface-2);
+}
+
+/* ===== Share Modal ===== */
+.share-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: fadeIn 0.15s ease;
+}
+
+.share-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+}
+
+.share-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.share-modal-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.share-modal-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.1s, color 0.1s;
+}
+
+.share-modal-close:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.share-modal-text {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.875rem;
+  line-height: 1.55;
+  padding: 12px 14px;
+  resize: none;
+}
+
+.share-modal-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.share-copy-btn {
+  flex: 1;
+  background: linear-gradient(135deg, var(--fire), var(--fire-2));
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 11px 20px;
+  transition: opacity 0.15s;
+}
+
+.share-copy-btn:hover {
+  opacity: 0.88;
+}
+
+.share-native-btn {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 11px 20px;
+  transition: border-color 0.15s;
+}
+
+.share-native-btn:hover {
+  border-color: var(--text-muted);
 }
 
 /* ===== Footer ===== */
@@ -662,6 +770,60 @@ body {
   color: var(--text);
   min-height: 1.5em;
   animation: fadeIn 0.3s ease;
+}
+
+/* ===== Loading Runner ===== */
+.runner-scene {
+  position: relative;
+  height: 68px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.runner-ground {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--border);
+}
+
+.runner-char {
+  position: absolute;
+  bottom: 13px;
+  left: 14%;
+  font-size: 1.5rem;
+  line-height: 1;
+  animation: runner-hop 2s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.runner-obstacle {
+  position: absolute;
+  bottom: 13px;
+  font-size: 1.3rem;
+  line-height: 1;
+  animation: runner-slide 2s linear infinite;
+}
+
+.runner-obstacle--2 {
+  animation-delay: -1s;
+}
+
+@keyframes runner-hop {
+  0%, 65%  { transform: translateY(0) scaleX(1); }
+  75%      { transform: translateY(-30px) scaleX(0.9); }
+  88%      { transform: translateY(0) scaleX(1.15); }
+  94%      { transform: translateY(0) scaleX(1); }
+  100%     { transform: translateY(0) scaleX(1); }
+}
+
+@keyframes runner-slide {
+  from { right: -2rem; }
+  to   { right: calc(100% + 1rem); }
 }
 
 .loading-error {

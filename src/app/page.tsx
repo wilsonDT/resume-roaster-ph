@@ -226,7 +226,7 @@ export default function Home() {
                 onChange={handlePDFUpload}
                 className="pdf-input-hidden"
               />
-              {isExtracting ? "⏳ Reading PDF…" : "📄 Upload PDF"}
+              {isExtracting ? "Reading PDF..." : "Upload PDF"}
             </label>
 
             {isDragging && !isExtracting && (
@@ -242,7 +242,7 @@ export default function Home() {
 
           {errorMsg && (
             <div className="error-msg" role="alert">
-              ⚠️ {errorMsg}
+              {errorMsg}
             </div>
           )}
 
@@ -251,7 +251,7 @@ export default function Home() {
             onClick={() => handleRoast()}
             disabled={isLoading || isExtracting}
           >
-            🔥 Roast me!
+            Roast me
           </button>
         </div>
       </section>
@@ -260,7 +260,7 @@ export default function Home() {
       {status === "done" && roast && (
         <section className="result-section" ref={resultRef}>
           <div className="result-header">
-            <h2 className="result-title">Here's the truth 👇</h2>
+            <h2 className="result-title">Here's the truth</h2>
             <button className="reset-btn" onClick={handleReset}>
               Try again
             </button>
@@ -271,11 +271,11 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="footer">
-        <p className="footer-tagline">No resume left unroasted. 🔥</p>
+        <p className="footer-tagline">No resume left unroasted.</p>
         <p className="footer-disclaimer">For entertainment only. But seriously, update that resume.</p>
         <div className="footer-meta">
           <span>
-            Made with 🔥 by{" "}
+            Made by{" "}
             <a href="https://www.linkedin.com/in/wilsondetorres/" target="_blank" rel="noopener noreferrer" className="footer-link">
               Wilson De Torres
             </a>
@@ -285,7 +285,7 @@ export default function Home() {
             Open source
           </a>
           <span className="footer-dot">·</span>
-          <span>🤖 AI-powered, zero data stored</span>
+          <span>AI-powered, zero data stored</span>
         </div>
       </footer>
     </main>

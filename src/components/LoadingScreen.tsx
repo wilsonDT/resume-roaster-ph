@@ -68,6 +68,12 @@ export default function LoadingScreen({
             <p className="loading-message" key={msgIndex}>
               {LOADING_MESSAGES[msgIndex]}
             </p>
+            <div className="runner-scene" aria-hidden="true">
+              <span className="runner-char">📄</span>
+              <span className="runner-obstacle">🔥</span>
+              <span className="runner-obstacle runner-obstacle--2">💼</span>
+              <div className="runner-ground" />
+            </div>
           </>
         )}
       </div>

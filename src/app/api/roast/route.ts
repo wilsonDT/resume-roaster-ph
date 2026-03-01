@@ -91,8 +91,8 @@ export async function POST(req: NextRequest) {
 
   try {
     const message = await client.chat.completions.create({
-      model: "stepfun/step-3.5-flash:free",
-      max_tokens: 1000,
+      model: "openrouter/free",
+      max_tokens: 4096,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: `Roast my resume:\n\n${resumeText}` },
@@ -125,6 +125,13 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(roast);
   } catch (err) {
+    const status = (err as { status?: number }).status;
+    if (status === 429) {
+      return NextResponse.json(
+        { error: "The AI is overwhelmed right now. Wait a moment and try again." },
+        { status: 429 }
+      );
+    }
     console.error("Roast API error:", err);
     return NextResponse.json(
       { error: "Something went wrong during the roast. Try again later!" },
