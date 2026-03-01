@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Resume Roaster PH 🔥 — I-roast ang Resume Mo",
+  title: "Resume Roaster PH 🔥 — Get Your Resume Roasted",
   description:
-    "I-paste ang resume mo at tanggapin ang pinaka-brutal na feedback sa buhay mo — sa Taglish. Para sa mga Pilipino na gusto ng katotohanan.",
+    "Paste your resume and get the most brutal honest feedback of your life. No sugarcoating. Para sa Filipinos, by Filipinos.",
   openGraph: {
     title: "Resume Roaster PH 🔥",
-    description: "I-roast ang resume mo. Walang prinsesa dito.",
+    description: "Get your resume roasted. No sugarcoating, slay!",
     type: "website",
   },
 };
@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="tl">
+    <html lang="en">
       <body>{children}</body>
     </html>
   );

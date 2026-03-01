@@ -13,12 +13,12 @@ function ScoreMeter({ score }: { score: number }) {
 
   const label =
     score >= 75
-      ? "Hindi naman ganun ka-bad 👏"
+      ? "Not that bad actually 👏"
       : score >= 50
-      ? "Pwede na, pero maraming trabaho 😬"
+      ? "Needs work, but okay sige 😬"
       : score >= 25
-      ? "Grabe naman 'to... 💀"
-      : "Jusko. Buhay ka pa ba? 😵";
+      ? "Grabe, this is rough... 💀"
+      : "Jusko. Are you okay? 😵";
 
   return (
     <div className="score-meter">
@@ -41,12 +41,12 @@ export default function RoastCard({ roast }: RoastCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
 
   const handleShare = async () => {
-    const text = `Resume Score: ${roast.score}/100\n\n"${roast.verdict}"\n\nI-roast din ang resume mo sa resume-roaster.ph 🔥`;
+    const text = `Resume Score: ${roast.score}/100\n\n"${roast.verdict}"\n\nGet your resume roasted too at resume-roaster.ph 🔥`;
     if (navigator.share) {
       await navigator.share({ text });
     } else {
       await navigator.clipboard.writeText(text);
-      alert("Copied sa clipboard! I-paste mo na sa kahit saan 🔥");
+      alert("Copied to clipboard! Share it anywhere 🔥");
     }
   };
 
@@ -69,7 +69,7 @@ export default function RoastCard({ roast }: RoastCardProps) {
 
         {/* Burns */}
         <div className="burns-section">
-          <p className="burns-label">Ang mga problema mo:</p>
+          <p className="burns-label">Here's your roast:</p>
           <ul className="burns-list">
             {roast.burns.map((burn, i) => (
               <li key={i} className="burn-item">
@@ -82,7 +82,7 @@ export default function RoastCard({ roast }: RoastCardProps) {
 
         {/* Pampagaan */}
         <div className="pampagaan-box">
-          <p className="pampagaan-label">✨ Pero sige, may maganda naman:</p>
+          <p className="pampagaan-label">✨ But okay, something's actually slay:</p>
           <p className="pampagaan-text">{roast.pampagaan}</p>
         </div>
 
@@ -94,7 +94,7 @@ export default function RoastCard({ roast }: RoastCardProps) {
 
       {/* Share button outside card so it's not in screenshot */}
       <button className="share-btn" onClick={handleShare}>
-        I-share mo 'to 📤
+        Share this 📤
       </button>
     </div>
   );
