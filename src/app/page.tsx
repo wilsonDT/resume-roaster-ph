@@ -3,12 +3,14 @@
 import { useState, useRef } from "react";
 import type { RoastResult } from "@/types/roast";
 import RoastCard from "@/components/RoastCard";
+import LoadingScreen from "@/components/LoadingScreen";
 
 type Status = "idle" | "loading" | "done" | "error";
 
 export default function Home() {
   const [text, setText] = useState("");
   const [status, setStatus] = useState<Status>("idle");
+  const [completing, setCompleting] = useState(false);
   const [roast, setRoast] = useState<RoastResult | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -42,6 +44,7 @@ export default function Home() {
       return;
     }
     setStatus("loading");
+    setCompleting(false);
     setErrorMsg("");
     setRoast(null);
 
@@ -58,12 +61,16 @@ export default function Home() {
       }
 
       setRoast(data);
-      setStatus("done");
+      setCompleting(true);
 
-      // Scroll to result
+      // Let the progress bar complete before showing results
       setTimeout(() => {
-        resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
+        setStatus("done");
+        setCompleting(false);
+        setTimeout(() => {
+          resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+      }, 600);
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "May error. Subukan ulit!");
       setStatus("error");
@@ -74,12 +81,23 @@ export default function Home() {
     setText("");
     setRoast(null);
     setStatus("idle");
+    setCompleting(false);
     setErrorMsg("");
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
+  const isLoading = status === "loading" || status === "error";
+
   return (
     <main className="main">
+      {isLoading && (
+        <LoadingScreen
+          completing={completing}
+          hasError={status === "error"}
+          errorMsg={errorMsg}
+          onRetry={handleReset}
+        />
+      )}
       {/* Hero */}
       <header className="hero">
         <div className="hero-badge">🇵🇭 For Filipinos, by Filipinos</div>
@@ -137,16 +155,9 @@ export default function Home() {
           <button
             className="roast-btn"
             onClick={handleRoast}
-            disabled={status === "loading"}
+            disabled={isLoading}
           >
-            {status === "loading" ? (
-              <>
-                <span className="spinner" aria-hidden="true" />
-                Inii-roast ka na...
-              </>
-            ) : (
-              "🔥 I-roast mo ako!"
-            )}
+            🔥 I-roast mo ako!
           </button>
         </div>
       </section>
