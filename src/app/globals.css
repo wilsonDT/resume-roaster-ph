@@ -205,6 +205,44 @@ body {
   gap: 12px;
 }
 
+/* ===== Textarea wrapper + PDF extract overlay ===== */
+.textarea-wrapper {
+  position: relative;
+}
+
+.pdf-extract-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.82);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  backdrop-filter: blur(3px);
+  animation: fadeIn 0.2s ease;
+}
+
+[data-theme="light"] .pdf-extract-overlay {
+  background: rgba(247, 245, 242, 0.88);
+}
+
+.pdf-extract-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--border);
+  border-top-color: var(--fire);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+.pdf-extract-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
 /* Drop zone active state */
 .drop-zone--active {
   border-color: var(--fire);
@@ -609,7 +647,7 @@ body {
   height: 100%;
   background: linear-gradient(90deg, var(--fire), var(--fire-2));
   border-radius: 100px;
-  animation: progressFake 12s cubic-bezier(0.1, 0, 0.3, 1) forwards;
+  animation: progressFake 20s cubic-bezier(0.1, 0, 0.3, 1) forwards;
 }
 
 .loading-progress-fill.completing {
@@ -624,6 +662,46 @@ body {
   color: var(--text);
   min-height: 1.5em;
   animation: fadeIn 0.3s ease;
+}
+
+.loading-stream {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: "SF Mono", "Fira Code", "Courier New", monospace;
+  font-size: 0.7rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  text-align: left;
+  overflow: hidden;
+  min-height: 60px;
+  max-height: 80px;
+  word-break: break-all;
+  display: flex;
+  align-items: flex-end;
+  animation: fadeIn 0.3s ease;
+}
+
+.loading-stream-text {
+  white-space: pre-wrap;
+}
+
+.loading-cursor {
+  display: inline-block;
+  width: 6px;
+  height: 0.9em;
+  background: var(--fire);
+  margin-left: 2px;
+  flex-shrink: 0;
+  align-self: flex-end;
+  margin-bottom: 1px;
+  animation: blink 0.8s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 .loading-error {

@@ -50,7 +50,7 @@ JSON format:
 }
 
 Tone guide:
-- Write in plain English Gen Z slang with some Tagalog conyo. 
+- Write in plain English Gen Z slang with some Tagalog conyo.
 - Be direct, witty, and sharp — no sugarcoating
 - Use emojis liberally — 💀 for devastating burns, 💩 for terrible choices, 🔥 for spicy takes, 😭 for painfully relatable fails
 - Call out ATS issues specifically when relevant (e.g. "An ATS would 💀 on this format")
@@ -89,51 +89,69 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  try {
-    const message = await client.chat.completions.create({
-      model: "stepfun/step-3.5-flash:free",
-      max_tokens: 32768,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        {
-          role: "user",
-          content: `Roast my resume:\n\n${resumeText}`,
-        },
-      ],
-    });
+  const encoder = new TextEncoder();
 
-    const rawText = message.choices[0]?.message?.content ?? "";
+  const stream = new ReadableStream({
+    async start(controller) {
+      const send = (obj: object) =>
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify(obj)}\n\n`));
 
-    let roast: RoastResult;
-    try {
-      roast = JSON.parse(rawText);
-    } catch {
-      // Fallback: try to extract JSON from the response
-      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) {
-        throw new Error(`Model did not return valid JSON. Raw: ${rawText.slice(0, 300)}`);
+      try {
+        const completion = await client.chat.completions.create({
+          model: "stepfun/step-3.5-flash:free",
+          max_tokens: 32768,
+          stream: true,
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            { role: "user", content: `Roast my resume:\n\n${resumeText}` },
+          ],
+        });
+
+        let rawText = "";
+        for await (const chunk of completion) {
+          const delta = chunk.choices[0]?.delta?.content ?? "";
+          if (delta) {
+            rawText += delta;
+            send({ type: "chunk", text: delta });
+          }
+        }
+
+        let roast: RoastResult;
+        try {
+          roast = JSON.parse(rawText);
+        } catch {
+          const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+          if (!jsonMatch) {
+            throw new Error(`Model did not return valid JSON. Raw: ${rawText.slice(0, 300)}`);
+          }
+          roast = JSON.parse(jsonMatch[0]);
+        }
+
+        if (
+          typeof roast.score !== "number" ||
+          !Array.isArray(roast.burns) ||
+          !roast.verdict ||
+          !roast.pampagaan
+        ) {
+          throw new Error("Invalid roast structure");
+        }
+
+        roast.score = Math.max(1, Math.min(100, Math.round(roast.score)));
+        send({ type: "result", data: roast });
+      } catch (err) {
+        console.error("Roast API error:", err);
+        send({ type: "error", message: "Something went wrong during the roast. Try again later!" });
+      } finally {
+        controller.close();
       }
-      roast = JSON.parse(jsonMatch[0]);
-    }
+    },
+  });
 
-    // Basic validation
-    if (
-      typeof roast.score !== "number" ||
-      !Array.isArray(roast.burns) ||
-      !roast.verdict ||
-      !roast.pampagaan
-    ) {
-      throw new Error("Invalid roast structure");
-    }
-
-    roast.score = Math.max(1, Math.min(100, Math.round(roast.score)));
-
-    return NextResponse.json(roast);
-  } catch (err) {
-    console.error("Roast API error:", err);
-    return NextResponse.json(
-      { error: "Something went wrong during the roast. Try again later!" },
-      { status: 500 }
-    );
-  }
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      "Connection": "keep-alive",
+    },
+  });
 }
