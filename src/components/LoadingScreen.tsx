@@ -20,7 +20,6 @@ interface LoadingScreenProps {
   hasError: boolean;
   errorMsg: string;
   onRetry: () => void;
-  streamingText?: string;
 }
 
 export default function LoadingScreen({
@@ -28,14 +27,13 @@ export default function LoadingScreen({
   hasError,
   errorMsg,
   onRetry,
-  streamingText,
 }: LoadingScreenProps) {
   const [msgIndex, setMsgIndex] = useState(() =>
     Math.floor(Math.random() * LOADING_MESSAGES.length)
   );
 
   useEffect(() => {
-    if (hasError || completing || streamingText) return;
+    if (hasError || completing) return;
     const id = setInterval(() => {
       setMsgIndex((prev) => {
         let next = Math.floor(Math.random() * LOADING_MESSAGES.length);
@@ -46,10 +44,7 @@ export default function LoadingScreen({
       });
     }, 2500);
     return () => clearInterval(id);
-  }, [hasError, completing, streamingText]);
-
-  // Show last ~200 chars of streaming text so it feels like a scrolling terminal
-  const visibleStream = streamingText ? streamingText.slice(-200) : null;
+  }, [hasError, completing]);
 
   return (
     <div className="loading-overlay" role="status" aria-live="polite">
@@ -64,24 +59,15 @@ export default function LoadingScreen({
           </div>
         ) : (
           <>
-            <p className="loading-label">
-              {streamingText ? "Receiving roast..." : "Getting roasted..."}
-            </p>
+            <p className="loading-label">Getting roasted...</p>
             <div className="loading-progress-track">
               <div
                 className={`loading-progress-fill${completing ? " completing" : ""}`}
               />
             </div>
-            {visibleStream ? (
-              <div className="loading-stream" aria-hidden="true">
-                <span className="loading-stream-text">{visibleStream}</span>
-                <span className="loading-cursor" />
-              </div>
-            ) : (
-              <p className="loading-message" key={msgIndex}>
-                {LOADING_MESSAGES[msgIndex]}
-              </p>
-            )}
+            <p className="loading-message" key={msgIndex}>
+              {LOADING_MESSAGES[msgIndex]}
+            </p>
           </>
         )}
       </div>

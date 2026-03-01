@@ -17,13 +17,15 @@ export default function Home() {
   const [errorMsg, setErrorMsg] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [isExtracting, setIsExtracting] = useState(false);
-  const [streamingText, setStreamingText] = useState("");
-
   const [theme, setTheme] = useState<"dark" | "light">("dark");
 
   useEffect(() => {
     const saved = localStorage.getItem("theme") as "dark" | "light" | null;
-    if (saved) setTheme(saved);
+    if (saved) {
+      setTheme(saved);
+    } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
+      setTheme("light");
+    }
   }, []);
 
   function toggleTheme() {
@@ -85,7 +87,6 @@ export default function Home() {
     setCompleting(false);
     setErrorMsg("");
     setRoast(null);
-    setStreamingText("");
 
     try {
       const res = await fetch("/api/roast", {
@@ -93,47 +94,22 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: trimmed }),
       });
+      const data = await res.json();
 
       if (!res.ok) {
-        const data = await res.json();
         throw new Error(data.error ?? "Unknown error");
       }
 
-      if (!res.body) throw new Error("No response body");
+      setRoast(data);
+      setCompleting(true);
 
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n\n");
-        buffer = lines.pop() ?? "";
-
-        for (const line of lines) {
-          if (!line.startsWith("data: ")) continue;
-          const event = JSON.parse(line.slice(6));
-
-          if (event.type === "chunk") {
-            setStreamingText((prev) => prev + event.text);
-          } else if (event.type === "result") {
-            setRoast(event.data);
-            setCompleting(true);
-            completionTimerRef.current = setTimeout(() => {
-              setStatus("done");
-              setCompleting(false);
-              scrollTimerRef.current = setTimeout(() => {
-                resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-              }, 100);
-            }, 600);
-          } else if (event.type === "error") {
-            throw new Error(event.message);
-          }
-        }
-      }
+      completionTimerRef.current = setTimeout(() => {
+        setStatus("done");
+        setCompleting(false);
+        scrollTimerRef.current = setTimeout(() => {
+          resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+      }, 600);
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Something went wrong. Try again!");
       setStatus("error");
@@ -148,7 +124,6 @@ export default function Home() {
     setStatus("idle");
     setCompleting(false);
     setErrorMsg("");
-    setStreamingText("");
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
@@ -197,7 +172,6 @@ export default function Home() {
           hasError={status === "error"}
           errorMsg={errorMsg}
           onRetry={handleReset}
-          streamingText={streamingText}
         />
       )}
       {/* Hero */}

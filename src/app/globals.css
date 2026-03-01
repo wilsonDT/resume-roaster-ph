@@ -664,46 +664,6 @@ body {
   animation: fadeIn 0.3s ease;
 }
 
-.loading-stream {
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px 14px;
-  font-family: "SF Mono", "Fira Code", "Courier New", monospace;
-  font-size: 0.7rem;
-  line-height: 1.6;
-  color: var(--text-muted);
-  text-align: left;
-  overflow: hidden;
-  min-height: 60px;
-  max-height: 80px;
-  word-break: break-all;
-  display: flex;
-  align-items: flex-end;
-  animation: fadeIn 0.3s ease;
-}
-
-.loading-stream-text {
-  white-space: pre-wrap;
-}
-
-.loading-cursor {
-  display: inline-block;
-  width: 6px;
-  height: 0.9em;
-  background: var(--fire);
-  margin-left: 2px;
-  flex-shrink: 0;
-  align-self: flex-end;
-  margin-bottom: 1px;
-  animation: blink 0.8s step-end infinite;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
 .loading-error {
   background: rgba(239, 68, 68, 0.08);
   border: 1px solid rgba(239, 68, 68, 0.25);
