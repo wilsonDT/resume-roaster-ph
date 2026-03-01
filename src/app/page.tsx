@@ -20,27 +20,27 @@ export default function Home() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.type !== "application/pdf") {
-      setErrorMsg("PDFs only, lods. No other formats.");
+      setErrorMsg("PDFs only. No other formats.");
       return;
     }
     try {
       const { extractTextFromPDF } = await import("@/lib/pdf");
       const extracted = await extractTextFromPDF(file);
       if (!extracted) {
-        setErrorMsg("Couldn't read that PDF, charot. Try pasting manually.");
+        setErrorMsg("Couldn't read that PDF. Try pasting manually.");
         return;
       }
       setText(extracted);
       setErrorMsg("");
     } catch {
-      setErrorMsg("Error reading the PDF. Just paste it, lods.");
+      setErrorMsg("Error reading the PDF. Just paste it.");
     }
   }
 
   async function handleRoast() {
     const trimmed = text.trim();
     if (trimmed.length < 50) {
-      setErrorMsg("That's way too short! Paste your whole resume, not just your name, sus.");
+      setErrorMsg("That's way too short! Paste your whole resume, not just your name.");
       return;
     }
     setStatus("loading");
@@ -181,7 +181,7 @@ export default function Home() {
           No resume left unroasted. 🔥
         </p>
         <p className="footer-disclaimer">
-          For entertainment only. But slay that resume update tho.
+          For entertainment only. But seriously, update that resume.
         </p>
       </footer>
     </main>

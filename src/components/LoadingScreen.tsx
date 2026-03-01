@@ -3,16 +3,16 @@
 import { useEffect, useState } from "react";
 
 const LOADING_MESSAGES = [
-  "The AI is reading your excuses...",
+  "Reading your resume with zero chill...",
   "Checking if you Googled 'resume tips' last night...",
   "Verifying if any of this is actually true...",
-  "The AI is telling its friends about your resume, grabe...",
   "Compiling a very long list of complaints...",
-  "Reaching out to your references, charot...",
   "Counting typos and grammatical crimes...",
-  "Roasting every buzzword you wrote, lods...",
-  "Still waiting for HR to reply, sus...",
-  "Praying for a decent score, sana all...",
+  "Roasting every buzzword you wrote...",
+  "Still waiting for HR to reply...",
+  "Reaching out to your references...",
+  "Rating your humility level...",
+  "Praying for a decent score...",
 ];
 
 interface LoadingScreenProps {
@@ -51,7 +51,7 @@ export default function LoadingScreen({
       <div className="loading-inner">
         {hasError ? (
           <div className="loading-error">
-            <p className="loading-error-title">Oof. Something went wrong, grabe.</p>
+            <p className="loading-error-title">Oof. Something went wrong.</p>
             <p className="loading-error-msg">{errorMsg}</p>
             <button className="loading-retry-btn" onClick={onRetry}>
               Try again
