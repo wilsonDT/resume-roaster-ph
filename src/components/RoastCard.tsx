@@ -69,7 +69,7 @@ export default function RoastCard({ roast }: RoastCardProps) {
         </div>
 
         <div className="card-footer">
-          <span>resume-roaster.ph</span>
+          <a href="https://resume-roaster-ph.vercel.app/" target="_blank" rel="noopener noreferrer">resume-roaster-ph.vercel.app</a>
         </div>
       </div>
 
