@@ -5,11 +5,9 @@ const nextConfig: NextConfig = {
     config.resolve.alias["canvas"] = false;
     return config;
   },
-  experimental: {
-    turbo: {
-      resolveAlias: {
-        canvas: "",
-      },
+  turbopack: {
+    resolveAlias: {
+      canvas: "",
     },
   },
 };
