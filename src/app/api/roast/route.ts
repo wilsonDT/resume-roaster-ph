@@ -2,6 +2,20 @@ import OpenAI from "openai";
 import { NextRequest, NextResponse } from "next/server";
 import type { RoastResult } from "@/types/roast";
 
+// Simple in-memory rate limiter: 5 requests per IP per minute
+const rateMap = new Map<string, number[]>();
+const WINDOW_MS = 60_000;
+const MAX_REQUESTS = 5;
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const timestamps = (rateMap.get(ip) ?? []).filter((t) => now - t < WINDOW_MS);
+  if (timestamps.length >= MAX_REQUESTS) return true;
+  timestamps.push(now);
+  rateMap.set(ip, timestamps);
+  return false;
+}
+
 const client = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
   apiKey: process.env.OPENROUTER_API_KEY,
@@ -44,6 +58,14 @@ Tone guide:
 - The verdict should be the most quotable line in the whole response`;
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+  if (isRateLimited(ip)) {
+    return NextResponse.json(
+      { error: "Sandali lang! Too many roasts. Try again in a minute." },
+      { status: 429 }
+    );
+  }
+
   let resumeText: string;
 
   try {
