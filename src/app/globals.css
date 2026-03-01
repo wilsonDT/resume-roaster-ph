@@ -450,6 +450,115 @@ body {
   color: #555;
 }
 
+/* ===== Loading Screen ===== */
+@keyframes progressFake {
+  from { width: 0%; }
+  to   { width: 88%; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: fadeIn 0.25s ease;
+}
+
+.loading-inner {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: center;
+}
+
+.loading-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.loading-progress-track {
+  height: 6px;
+  background: var(--surface-2);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.loading-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--fire), var(--fire-2));
+  border-radius: 100px;
+  animation: progressFake 12s cubic-bezier(0.1, 0, 0.3, 1) forwards;
+}
+
+.loading-progress-fill.completing {
+  animation: none;
+  width: 100% !important;
+  transition: width 0.4s ease;
+}
+
+.loading-message {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  min-height: 1.5em;
+  animation: fadeIn 0.3s ease;
+}
+
+.loading-error {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.loading-error-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.loading-error-msg {
+  font-size: 0.875rem;
+  color: #f87171;
+  line-height: 1.5;
+}
+
+.loading-retry-btn {
+  margin-top: 4px;
+  background: linear-gradient(135deg, var(--fire), var(--fire-2));
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 12px 24px;
+  transition: opacity 0.15s;
+}
+
+.loading-retry-btn:hover {
+  opacity: 0.88;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 480px) {
   .input-card { padding: 20px 16px; }
