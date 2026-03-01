@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import type { RoastResult } from "@/types/roast";
 import RoastCard from "@/components/RoastCard";
 import LoadingScreen from "@/components/LoadingScreen";
@@ -17,6 +17,20 @@ export default function Home() {
   const [errorMsg, setErrorMsg] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [isExtracting, setIsExtracting] = useState(false);
+
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+
+  useEffect(() => {
+    const saved = localStorage.getItem("theme") as "dark" | "light" | null;
+    if (saved) setTheme(saved);
+  }, []);
+
+  function toggleTheme() {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem("theme", next);
+  }
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
@@ -144,6 +158,10 @@ export default function Home() {
   const isLoading = status === "loading" || status === "error";
 
   return (
+    <>
+    <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
+      {theme === "dark" ? "☀️ Light" : "🌙 Dark"}
+    </button>
     <main className="main">
       {isLoading && (
         <LoadingScreen
@@ -260,5 +278,6 @@ export default function Home() {
         </div>
       </footer>
     </main>
+    </>
   );
 }
